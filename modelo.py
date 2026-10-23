@@ -96,13 +96,14 @@ class Partida:
     def reiniciar(self) -> None:
         self.puntos = [0, 0]
         self.ganador = None
+        self.en_pausa = False
         for paleta in self.paletas:
             paleta.posicion_y = (ALTO_PANTALLA - ALTO_PALETA) / 2
         self.pelota.reiniciar()
 
     def actualizar(self, segundos: float, direcciones: tuple) -> None:
         """Avanza una partida activa según el tiempo y las entradas de ambos jugadores."""
-        if self.ganador is not None:
+        if self.ganador is not None or self.en_pausa:
             return
         for paleta, direccion in zip(self.paletas, direcciones):
             paleta.mover(direccion, segundos)
@@ -141,4 +142,5 @@ class Partida:
             "puntos_izquierda": self.puntos[0],
             "puntos_derecha": self.puntos[1],
             "ganador": self.ganador,
+            "en_pausa": self.en_pausa,
         }

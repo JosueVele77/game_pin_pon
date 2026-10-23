@@ -44,7 +44,8 @@ def validar_estado(estado) -> bool:
         if type(estado.get(nombre)) is not int or not 0 <= estado[nombre] <= 10:
             return False
     return (
-        type(estado.get("secuencia")) is int and estado["secuencia"] >= 0
+        type(estado.get("en_pausa", False)) is bool
+        and type(estado.get("secuencia")) is int and estado["secuencia"] >= 0
         and type(estado.get("numero_jugador")) is int and estado["numero_jugador"] in (0, 1)
         and type(estado.get("jugadores_conectados")) is int
         and estado["jugadores_conectados"] in (1, 2)
@@ -67,6 +68,7 @@ class ConexionCliente:
         self.secuencia = -1
         self.inicio_conexion = 0.0
         self.ultima_recepcion = 0.0
+        self.solicitud_pausa = 0
 
     @property
     def conectada(self) -> bool:
@@ -92,12 +94,19 @@ class ConexionCliente:
         self.secuencia = -1
         self.ultima_recepcion = 0.0
         self.inicio_conexion = time.monotonic()
+        self.solicitud_pausa = 0
+
+    def solicitar_pausa(self) -> None:
+        """Registra una pulsación de P y la reenvía hasta que llegue al servidor."""
+        if self.conectada:
+            self.solicitud_pausa += 1
 
     def intercambiar(self, subir: bool, bajar: bool, reiniciar: bool, instante: float) -> None:
         """Envía una entrada y lee las respuestas pendientes sin detener el dibujo."""
         if not self.conectada:
             return
         entrada = {"tipo": "entrada", "subir": subir, "bajar": bajar, "reiniciar": reiniciar}
+        entrada["solicitud_pausa"] = self.solicitud_pausa
         try:
             self.canal.send(json.dumps(entrada).encode("utf-8"))
             for _ in range(256):
@@ -234,6 +243,8 @@ class ClientePong:
                     self.conexion.desconectar()
                 elif evento.key == motor.K_r:
                     reiniciar = True
+                elif evento.key == motor.K_p and not getattr(evento, "repeat", False):
+                    self.conexion.solicitar_pausa()
         return reiniciar
 
     def actualizar_conexion(self, reiniciar: bool, instante: float) -> None:
@@ -275,7 +286,10 @@ class ClientePong:
             mensaje = "¡Ganaste!" if estado["ganador"] == numero else "Ganó tu oponente"
             pantalla.dibujar_texto(mensaje, 270, COLOR_DESTACADO, grande=True)
             pantalla.dibujar_texto("R: nueva partida", 320)
-        pantalla.dibujar_texto("W/S o flechas: mover    |    Esc: desconectar", 560, COLOR_SECUNDARIO)
+        elif estado.get("en_pausa", False):
+            pantalla.dibujar_texto("JUEGO PAUSADO", 270, COLOR_DESTACADO, grande=True)
+            pantalla.dibujar_texto("P: reanudar para ambos jugadores", 320)
+        pantalla.dibujar_texto("W/S o flechas: mover  |  P: pausa  |  Esc: desconectar", 560, COLOR_SECUNDARIO)
 
     def ejecutar(self) -> None:
         """Orden del ciclo: eventos, intercambio de red, dibujo y espera del reloj."""

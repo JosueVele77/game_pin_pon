@@ -27,6 +27,7 @@ class JugadorConectado:
     ultima_actividad: float
     subir: bool = False
     bajar: bool = False
+    ultima_solicitud_pausa: int = 0
 
     def obtener_direccion(self, instante: float) -> int:
         # Si dejan de llegar controles, detener la paleta evita movimientos fantasma.
@@ -89,6 +90,15 @@ class ServidorPong:
         jugador.ultima_actividad = instante
         jugador.subir = mensaje.get("subir") is True
         jugador.bajar = mensaje.get("bajar") is True
+        solicitud = mensaje.get("solicitud_pausa", 0)
+        if type(solicitud) is int and solicitud > jugador.ultima_solicitud_pausa:
+            pulsaciones = solicitud - jugador.ultima_solicitud_pausa
+            jugador.ultima_solicitud_pausa = solicitud
+            # El contador evita repetir una pulsación si UDP duplica un paquete.
+            # Si se pierden paquetes, se conserva la cantidad de pulsaciones.
+            if (pulsaciones % 2 == 1 and all(self.jugadores)
+                    and self.partida.ganador is None):
+                self.partida.en_pausa = not self.partida.en_pausa
         if self.partida.ganador is not None and mensaje.get("reiniciar") is True:
             self.partida.reiniciar()
 
