@@ -229,8 +229,6 @@ game_pin_pon/
 
 <div align="center">
 
-![Estructura](docs/capturas/01-estructura-proyecto.png)
-
 </div>
 
 ---
