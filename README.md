@@ -15,12 +15,8 @@ Un servidor autoritativo ejecuta la física a **60 Hz** y mantiene sincronizados
 
 [Inicio rápido](#-inicio-rápido) ·
 [Cómo funciona](#-cómo-funciona) ·
-[Capturas](#-capturas) ·
 [Protocolo](#-protocolo-de-red) ·
-[Problemas](#-solución-de-problemas) ·
 [Autores](#-autores)
-
-![Partida en red](docs/capturas/05-partida-izquierda.png)
 
 </div>
 
@@ -265,29 +261,6 @@ Todos los mensajes llevan el prefijo `[SERVIDOR]`:
 
 ---
 
-## 📸 Capturas
-
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <img src="docs/capturas/05-partida-izquierda.png" alt="Jugador 1"><br>
-      <b>Jugador 1</b> · paleta izquierda
-    </td>
-    <td align="center" width="50%">
-      <img src="docs/capturas/06-partida-derecha.png" alt="Jugador 2"><br>
-      <b>Jugador 2</b> · paleta derecha
-    </td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2">
-      <img src="docs/capturas/04-formulario-sin-respuesta.png" alt="Formulario de conexión" width="50%"><br>
-      <b>Formulario de conexión</b> · aviso cuando el servidor no responde
-    </td>
-  </tr>
-</table>
-
----
-
 ## 🛠️ Solución de problemas
 
 <details>
@@ -340,7 +313,7 @@ python -m pip install pygame
 
 | | Autor | Carrera |
 |:-:|---|---|
-| 👨‍💻 | **Josué S. Vele** · [@JosueVele77](https://github.com/JosueVele77) | Computación |
+| 👨‍💻 | **Josué S. Vele**  | Computación |
 | 👨‍💻 | **Juan D. Figueroa** | Computación |
 
 **Universidad Politécnica Salesiana** · Sede Quito – Campus Sur · Quito, Ecuador 🇪🇨
